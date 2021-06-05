@@ -7,8 +7,8 @@ async function createWindow () {
 	// create and config browser window
 	win = new BrowserWindow({titleBarStyle: 'hidden',
   // frame: false,
-  width: 1281,
-  height: 800,
+  width: 900,
+  height: 700,
   minWidth: 800,
   minHeight: 600,
   backgroundColor: '#FFEBCD',
