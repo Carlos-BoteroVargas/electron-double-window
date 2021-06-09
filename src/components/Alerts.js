@@ -1,12 +1,13 @@
 import React from 'react';
+import "../App.css";
 const electron = window.require('electron');
-const {shell} = window.require('electron');
+// const {shell} = window.require('electron');
 const remote = electron.remote
 const {dialog} = remote
 
 const Alerts = ()=>{
   return(
-  <div>
+  <div className='alerts'>
   {/* type:none */}
     <button onClick={()=>{
        dialog.showMessageBox({

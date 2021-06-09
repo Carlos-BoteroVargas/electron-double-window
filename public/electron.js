@@ -18,7 +18,7 @@ function createWindow () {
   //load the index.html from a url
   win.loadURL('http://localhost:3000');
   // Open the DevTools.
-  // win.webContents.openDevTools()
+  win.webContents.openDevTools()
 }
 
 //! creates a double window, instead of the single one above
@@ -118,7 +118,29 @@ app.on('activate', () => {
 /* In this file you can include the rest of your app's specific main process
  code. You can also put them in separate files and require them here. */
 
+//  ipcMain.on('anything-asynchronous', (event, arg) => {
+//   console.log("async",arg) // prints "async ping"
+//   event.reply('asynchronous-reply', 'pong')
+// })
+
 ipcMain.on('anything-asynchronous', (event, arg) => {
-  //execute tasks on behalf of renderer process 
-      console.log(arg) // prints "ping"
-  })
+  console.log("heyyyy",arg) // prints "heyyyy ping"
+      event.reply('asynchronous-reply', 'asynchronous pong - when paged by react')
+  });
+
+// gets triggered by the sync button defined in the App component
+// ipcMain.on('anything-synchronous', (event, arg) => {
+//   console.log("sync",arg) // prints "sync ping"
+// })
+
+ipcMain.on('anything-synchronous', (event, arg) => {
+  console.log(arg) // prints "ping on loading the page"
+  event.returnValue = 'I just returned a pong (automatic when synched calls)' // returns a value to renderer process
+})
+
+// ipcMain.on('anything-synchronous', (event, arg) => {
+//   console.log("sync",arg) // prints "sync ping"
+//   //reply
+//   event.returnValue = 'pong'
+// });
+
