@@ -1,7 +1,6 @@
 import React from 'react';
 import "../App.css";
 const electron = window.require('electron');
-// const {shell} = window.require('electron');
 const remote = electron.remote
 const {dialog} = remote
 

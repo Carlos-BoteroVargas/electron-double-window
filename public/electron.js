@@ -12,51 +12,12 @@ function createWindow () {
       contextIsolation: false
     }
   })
-  // Remove menu or set the Menu to null
-  // win.removeMenu();
-  // win.setMenu(null);
   //load the index.html from a url
   win.loadURL('http://localhost:3000');
+
   // Open the DevTools.
   win.webContents.openDevTools()
 }
-
-//! creates a double window, instead of the single one above
-// function createWindow () {
-//   const windowOne = new BrowserWindow({
-//     title:"My First App",
-//     // frame:false,
-//     width:500,
-//     height:500,
-//     maxHeight:600,
-//     maxWidth:600,
-//     minHeight:400,
-//     minWidth:400,
-//     backgroundColor:'#7B435B'
-//   })
-//   // load HTML file via url
-//   windowOne.loadURL('https://www.electronjs.org/')
-//   const windowTwo = new BrowserWindow({
-//     backgroundColor:'#7B435B'
-//   })
-//   // load HTML file locally
-//   windowTwo.loadFile('index.html')
-// }
-
-//! Creates a child-Parent set of windows
-// function createWindow () {
-//   const parent = new BrowserWindow({ title: "My First App" });
-//   parent.loadURL('https://www.electronjs.org/');
-
-//   let child = new BrowserWindow({
-//     parent: parent,
-//     modal: true, 
-//     show: false
-//  });
-//   child.loadURL('http://localhost:3000')
-//   parent.show();
-//   child.once('ready-to-show', () => {   child.show() })
-//  }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -115,32 +76,19 @@ app.on('activate', () => {
   }
 })
 
-/* In this file you can include the rest of your app's specific main process
- code. You can also put them in separate files and require them here. */
+/* All the IPC MAIN and RENDERER info will live down here.
+   If it gets too heavy, will modularize elswhere */
 
-//  ipcMain.on('anything-asynchronous', (event, arg) => {
-//   console.log("async",arg) // prints "async ping"
-//   event.reply('asynchronous-reply', 'pong')
-// })
 
 ipcMain.on('anything-asynchronous', (event, arg) => {
   console.log("heyyyy",arg) // prints "heyyyy ping"
       event.reply('asynchronous-reply', 'asynchronous pong - when paged by react')
   });
 
-// gets triggered by the sync button defined in the App component
-// ipcMain.on('anything-synchronous', (event, arg) => {
-//   console.log("sync",arg) // prints "sync ping"
-// })
-
 ipcMain.on('anything-synchronous', (event, arg) => {
   console.log(arg) // prints "ping on loading the page"
-  event.returnValue = 'I just returned a pong (automatic when synched calls)' // returns a value to renderer process
+  event.returnValue = 'I just returned a pong (automatic when synched calls)' 
+  // returns a value to renderer process
 })
 
-// ipcMain.on('anything-synchronous', (event, arg) => {
-//   console.log("sync",arg) // prints "sync ping"
-//   //reply
-//   event.returnValue = 'pong'
-// });
 

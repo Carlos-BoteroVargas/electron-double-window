@@ -1,3 +1,6 @@
+// This file has an OPEN DIALOGUE mock up to access the fs directly.
+// We might (or not) need this later
+
 import React from 'react';
 const electron = window.require('electron');
 const {shell} = window.require('electron');
