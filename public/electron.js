@@ -1,105 +1,124 @@
 const { app, BrowserWindow, Menu } = require('electron');
-// var path = require('path');
+const { ipcMain } = require('electron')
 
-const windows = new Set();
-
-async function createWindow () {
-
-  let x, y;
-
-  const currentWindow = BrowserWindow.getFocusedWindow();
-   if (currentWindow) {
-     const [currentWindowX, currentWindowY] = currentWindow.getPosition();
-     x = currentWindowX + 24;
-    y = currentWindowY + 24;
-   }
-	// create and config browser window
-	let newWindow = new BrowserWindow({titleBarStyle: 'hidden',
-  // frame: false,
-  width: 900,
-  height: 700,
-  minWidth: 800,
-  minHeight: 600,
-  x,
-  y,
-  backgroundColor: '#FFEBCD',
-  show: false,
-  //? Impossible to render images on the electron shell when using React environment instead of webpack alone.
-  // icon: path.join(__dirname, 'images/favicon.png'),
-  webPreferences: {
-    nodeIntegration: true,
-    enableRemoteModule:true,
-    contextIsolation: false
-  }
-});
-
-	// load webpage and check development states
-  	newWindow.loadURL("http://localhost:3000");
-
-    newWindow.webContents.on('did-finish-load', () => {
-      if (!newWindow) {
-        throw new Error('"newWindow" is not defined');
-      }
-      if (process.env.START_MINIMIZED) {
-        newWindow.minimize();
-      } else {
-        newWindow.show();
-        newWindow.focus();
-      }
-    });
-	// on close clicked
-	newWindow.on('closed', () => {
-    windows.delete(newWindow);
-    newWindow = null;
-  });
-	// * enable Chromes development tools
-    // win.webContents.openDevTools({mode:'detach'});
-  
-  newWindow.on('focus', () => {
-    const MainMenu = Menu.buildFromTemplate(menu)
-	  Menu.setApplicationMenu(MainMenu)
-  });
-  
-	newWindow.once('ready-to-show', () => {
-    newWindow.show()
-	});
-
-  windows.add(newWindow);
-  return newWindow;
+function createWindow () {
+  // Create the browser window.
+  const win = new BrowserWindow({
+    width: 800,
+    height: 750,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule:true,
+      contextIsolation: false
+    }
+  })
+  // Remove menu or set the Menu to null
+  // win.removeMenu();
+  // win.setMenu(null);
+  //load the index.html from a url
+  win.loadURL('http://localhost:3000');
+  // Open the DevTools.
+  // win.webContents.openDevTools()
 }
 
-const isMac = process.platform === 'darwin' ? true : false;
-const menu = [
-	...(isMac ? [{ role: 'appMenu' }] : []),
-	{
-		role: 'fileMenu'
-	},
-	{
-		role: 'editMenu'
-	},
-	{
-		label: 'Experiments',
-  submenu: [
-    {
-      label: 'New Window',
-      accelerator: isMac ? 'Shift+Command+N' : 'Shift+Control+N',
-      click: () => {
-        createWindow();
-      }
-    }
-  ]
-	}
-]
+//! creates a double window, instead of the single one above
+// function createWindow () {
+//   const windowOne = new BrowserWindow({
+//     title:"My First App",
+//     // frame:false,
+//     width:500,
+//     height:500,
+//     maxHeight:600,
+//     maxWidth:600,
+//     minHeight:400,
+//     minWidth:400,
+//     backgroundColor:'#7B435B'
+//   })
+//   // load HTML file via url
+//   windowOne.loadURL('https://www.electronjs.org/')
+//   const windowTwo = new BrowserWindow({
+//     backgroundColor:'#7B435B'
+//   })
+//   // load HTML file locally
+//   windowTwo.loadFile('index.html')
+// }
 
-app.on('ready', createWindow);
+//! Creates a child-Parent set of windows
+// function createWindow () {
+//   const parent = new BrowserWindow({ title: "My First App" });
+//   parent.loadURL('https://www.electronjs.org/');
 
+//   let child = new BrowserWindow({
+//     parent: parent,
+//     modal: true, 
+//     show: false
+//  });
+//   child.loadURL('http://localhost:3000')
+//   parent.show();
+//   child.once('ready-to-show', () => {   child.show() })
+//  }
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+// TODO: app.whenReady().then(createWindow);
+
+app.whenReady().then(()=>{
+  createWindow()
+      const template = [
+              {
+                    label:'Open Google',
+                    click: function(){
+                              let win = new BrowserWindow({width:500,height:200})
+                              win.loadURL('https://www.google.com')
+                          }
+              },
+              {
+                    label:'View',
+              },
+              {
+                    label:'options',
+                    submenu:[
+                              {role:'selectall'},
+                              {role:'reload'}
+                          ]
+              },
+              {
+                    label: 'with Separator',
+                    submenu:[
+                        {role:'copy'},
+                        // creates a divider between two options
+                        {type:'separator'},
+                        {role:'paste'},
+                    ]
+              }
+      ]
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
+})
+
+// Quit when all windows are closed, except on macOS. There, it's common
+// for applications and their menu bar to stay active until the user quits
+// explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (!isMac)
-    app.quit();
-});
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
 
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (windows.size === 0) createWindow();
-});
+  
+  if (BrowserWindow.getAllWindows().length === 0) {
+    createWindow()
+  }
+})
+
+/* In this file you can include the rest of your app's specific main process
+ code. You can also put them in separate files and require them here. */
+
+ipcMain.on('anything-asynchronous', (event, arg) => {
+  //execute tasks on behalf of renderer process 
+      console.log(arg) // prints "ping"
+  })
