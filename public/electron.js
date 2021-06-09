@@ -28,6 +28,7 @@ async function createWindow () {
   // icon: path.join(__dirname, 'images/favicon.png'),
   webPreferences: {
     nodeIntegration: true,
+    enableRemoteModule:true,
     contextIsolation: false
   }
 });
